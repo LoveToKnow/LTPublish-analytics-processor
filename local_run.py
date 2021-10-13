@@ -13,7 +13,7 @@ import pdb
 
 def get_connection():
     connection = conn.connect(host="3.87.212.134",
-        user=,
+        user="",
         password="",
         database="ltk")
     return connection
@@ -28,13 +28,13 @@ def get_records(connection):
 # and updated_at < TIMESTAMP(curdate()) 
 # and type not in ('Slideshow','Blogpost');
 # # ''')
-    cursor.execute('''select cv.id, cv.vertical_id, cv.title, cv.updated_at, cv.version, cv.hidden, cv.protected ,cv.deleted_at 
-    from channel_version cv
-    ''')
+    # cursor.execute('''select cv.id, cv.vertical_id, cv.title, cv.updated_at, cv.version, cv.hidden, cv.protected ,cv.deleted_at 
+    # from channel_version cv
+    # ''')
     # cursor.execute('''SELECT user_id, is_active, user_profile.name, date('2021-10-11') as record_date  
     #     FROM ltk.sf_guard_user as user_core join ltk.sf_guard_user_profile as user_profile on user_core.id =user_profile.user_id 
     #     order by is_active;''')
-    # cursor.execute('''select title_id, yes_count, no_count, timestamp("2021-10-11 23:59:59") as record_date from ltk.title_useful''')
+    cursor.execute('''select title_id, type as useful, submitted_at from ltk.useful''')
     results = cursor.fetchall()
     field_names = [i[0] for i in cursor.description]
     records = pd.DataFrame(results,columns=field_names)
@@ -78,14 +78,14 @@ def main():
         # ltpublish['author_user_id'] = ltpublish['author_user_id'].apply(lambda x: 0 if pd.isna(x) else int(x))
 
         
-        ltpublish['updated_at'] = ltpublish['updated_at'].apply(process_tstamp)
-        ltpublish['deleted_at'] = ltpublish['deleted_at'].apply(process_tstamp)
+        # ltpublish['updated_at'] = ltpublish['updated_at'].apply(process_tstamp)
+        # ltpublish['deleted_at'] = ltpublish['deleted_at'].apply(process_tstamp)
 
         # ltpublish['record_date'] = ltpublish['record_date'].apply(process_tstamp)
         # ltpublish['is_active'] = ltpublish['is_active'].apply(lambda x: True)
         # ltpublish['is_active'] = ltpublish['is_active'].apply(lambda x: False if x is 0 else True)
 
-        # ltpublish['record_date'] = ltpublish['record_date'].apply(process_tstamp)
+        ltpublish['submitted_at'] = ltpublish['submitted_at'].apply(process_tstamp)
         json = ltpublish.to_json(
             orient="records",
             lines=True)
